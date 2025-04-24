@@ -1,10 +1,6 @@
-import dotenv from 'dotenv';
 import express from 'express';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import routes from './routes/index.js';
-
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -12,14 +8,14 @@ const PORT = process.env.PORT || 3001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve static files from client/dist
-app.use(express.static(path.join(__dirname, '../../../client/dist')));
+// Serve static files from the client/dist directory
+app.use(express.static(path.join(__dirname, '../../client/dist')));
 
-// ✅ Middleware to parse JSON and urlencoded data
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// All other routes should return the index.html from client
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+});
 
-// ✅ Use imported routes
-app.use(routes);
-
-app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
